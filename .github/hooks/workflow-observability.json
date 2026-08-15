@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/workflow-observability.cjs",
+        "env": { "STORY_WORKFLOW_HOOK_EVENT": "sessionStart" },
+        "timeoutSec": 10
+      }
+    ],
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/workflow-observability.cjs",
+        "env": { "STORY_WORKFLOW_HOOK_EVENT": "userPromptSubmitted" },
+        "timeoutSec": 10
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/workflow-observability.cjs",
+        "env": { "STORY_WORKFLOW_HOOK_EVENT": "preToolUse" },
+        "timeoutSec": 10
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/workflow-observability.cjs",
+        "env": { "STORY_WORKFLOW_HOOK_EVENT": "postToolUse" },
+        "timeoutSec": 10
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/workflow-observability.cjs",
+        "env": { "STORY_WORKFLOW_HOOK_EVENT": "postToolUseFailure" },
+        "timeoutSec": 10
+      }
+    ],
+    "subagentStart": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/workflow-observability.cjs",
+        "env": { "STORY_WORKFLOW_HOOK_EVENT": "subagentStart" },
+        "timeoutSec": 10
+      }
+    ],
+    "subagentStop": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/workflow-observability.cjs",
+        "env": { "STORY_WORKFLOW_HOOK_EVENT": "subagentStop" },
+        "timeoutSec": 10
+      }
+    ],
+    "agentStop": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/workflow-observability.cjs",
+        "env": { "STORY_WORKFLOW_HOOK_EVENT": "agentStop" },
+        "timeoutSec": 10
+      }
+    ],
+    "errorOccurred": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/workflow-observability.cjs",
+        "env": { "STORY_WORKFLOW_HOOK_EVENT": "errorOccurred" },
+        "timeoutSec": 10
+      }
+    ],
+    "preCompact": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/workflow-observability.cjs",
+        "env": { "STORY_WORKFLOW_HOOK_EVENT": "preCompact" },
+        "timeoutSec": 10
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/workflow-observability.cjs",
+        "env": { "STORY_WORKFLOW_HOOK_EVENT": "sessionEnd" },
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

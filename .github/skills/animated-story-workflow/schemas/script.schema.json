@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "script.schema.json",
+  "title": "Animated story script",
+  "type": "object",
+  "required": ["schemaVersion", "title", "scenes"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "scenes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["sceneId", "narration", "dialogue", "visualCaption", "transcript"],
+        "additionalProperties": false,
+        "properties": {
+          "sceneId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "narration": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+          "dialogue": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["speaker", "text"],
+              "additionalProperties": false,
+              "properties": {
+                "speaker": { "type": "string", "minLength": 1 },
+                "text": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          "visualCaption": { "type": "string", "minLength": 1 },
+          "transcript": { "type": "string", "minLength": 1 },
+          "interactionPrompt": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.workflow/
+.playwright-cli/
+coverage/
+*.log
+.env

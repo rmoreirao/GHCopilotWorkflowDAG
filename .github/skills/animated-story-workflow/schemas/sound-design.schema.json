@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sound-design.schema.json",
+  "title": "Sound design",
+  "type": "object",
+  "required": ["schemaVersion", "defaultMuted", "userGestureRequired", "masterDescription", "scenes"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "defaultMuted": { "const": true },
+    "userGestureRequired": { "const": true },
+    "masterDescription": { "type": "string", "minLength": 1 },
+    "scenes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["sceneId", "cues"],
+        "additionalProperties": false,
+        "properties": {
+          "sceneId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "cues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "trigger", "synthesis", "caption"],
+              "additionalProperties": false,
+              "properties": {
+                "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+                "trigger": { "enum": ["scene-enter", "interaction", "none"] },
+                "synthesis": { "type": "string" },
+                "caption": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

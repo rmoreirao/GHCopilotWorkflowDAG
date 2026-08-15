@@ -1,0 +1,10 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/shared" },
+    { "path": "./packages/workflow-core" },
+    { "path": "./packages/workflow-mcp" },
+    { "path": "./apps/server" },
+    { "path": "./apps/visualizer" }
+  ]
+}

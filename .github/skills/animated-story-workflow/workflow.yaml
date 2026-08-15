@@ -1,0 +1,203 @@
+name: animated-story
+version: 1
+description: Create, review, optimize, and publish an original animated story web app.
+inputs:
+  storyPrompt: "${STORY_PROMPT}"
+  sceneCount: 5
+  visualStyle: "whimsical paper-cut"
+  maxParallelScenes: 4
+tasks:
+  - id: story-plan
+    description: Plan the story arc and produce scene expansion items.
+    dependsOn: []
+    executor:
+      type: agent
+      name: story-planner
+    inputs:
+      premise: "${{ inputs.storyPrompt }}"
+      sceneCount: "${{ inputs.sceneCount }}"
+      visualStyle: "${{ inputs.visualStyle }}"
+    outputs:
+      planFile:
+        path: artifacts/plan/story-plan.json
+        schema: .github/skills/animated-story-workflow/schemas/plan.schema.json
+      sceneItems:
+        value: []
+        schema: .github/skills/animated-story-workflow/schemas/scene-items.schema.json
+    retry:
+      maxAttempts: 2
+
+  - id: script
+    description: Write narration, dialogue, captions, and interaction copy.
+    dependsOn: [story-plan]
+    executor:
+      type: agent
+      name: story-writer
+    inputs:
+      plan: "${{ tasks.story-plan.outputs.planFile }}"
+    outputs:
+      scriptFile:
+        path: artifacts/script/story-script.json
+        schema: .github/skills/animated-story-workflow/schemas/script.schema.json
+    retry:
+      maxAttempts: 2
+
+  - id: art-direction
+    description: Define an original local visual language and per-scene art guidance.
+    dependsOn: [story-plan]
+    executor:
+      type: agent
+      name: art-director
+    inputs:
+      plan: "${{ tasks.story-plan.outputs.planFile }}"
+      visualStyle: "${{ inputs.visualStyle }}"
+    outputs:
+      artDirectionFile:
+        path: artifacts/design/art-direction.json
+        schema: .github/skills/animated-story-workflow/schemas/art-direction.schema.json
+    retry:
+      maxAttempts: 2
+
+  - id: sound-design
+    description: Define optional synthesized sound cues and accessible alternatives.
+    dependsOn: [story-plan]
+    executor:
+      type: agent
+      name: sound-designer
+    inputs:
+      plan: "${{ tasks.story-plan.outputs.planFile }}"
+    outputs:
+      soundDesignFile:
+        path: artifacts/design/sound-design.json
+        schema: .github/skills/animated-story-workflow/schemas/sound-design.schema.json
+    retry:
+      maxAttempts: 2
+
+  - id: ui-theme
+    description: Create the UI theme manifest and local CSS theme.
+    dependsOn: [story-plan]
+    executor:
+      type: agent
+      name: ui-designer
+    inputs:
+      plan: "${{ tasks.story-plan.outputs.planFile }}"
+      visualStyle: "${{ inputs.visualStyle }}"
+    outputs:
+      themeManifest:
+        path: artifacts/design/ui-theme.json
+        schema: .github/skills/animated-story-workflow/schemas/ui-theme-manifest.schema.json
+      themeCss:
+        path: artifacts/design/theme.css
+    retry:
+      maxAttempts: 2
+
+  - id: generate-scenes
+    description: Generate one self-contained animated scene module per plan item.
+    dependsOn: [story-plan, script, art-direction, sound-design, ui-theme]
+    executor:
+      type: agent
+      name: scene-animator
+    parallelForEach:
+      input: "${{ tasks.story-plan.outputs.sceneItems }}"
+      itemName: scene
+      maxConcurrency: 4
+    inputs:
+      scene: "${{ item }}"
+      plan: "${{ tasks.story-plan.outputs.planFile }}"
+      script: "${{ tasks.script.outputs.scriptFile }}"
+      artDirection: "${{ tasks.art-direction.outputs.artDirectionFile }}"
+      soundDesign: "${{ tasks.sound-design.outputs.soundDesignFile }}"
+      themeManifest: "${{ tasks.ui-theme.outputs.themeManifest }}"
+      themeCss: "${{ tasks.ui-theme.outputs.themeCss }}"
+    outputs:
+      sceneManifest:
+        path: artifacts/scenes/scene.json
+        schema: .github/skills/animated-story-workflow/schemas/scene-manifest.schema.json
+      sceneDirectory:
+        directory: artifacts/scenes
+    retry:
+      maxAttempts: 2
+
+  - id: assemble-app
+    description: Fan in all scene modules and design assets into a static web app.
+    dependsOn: [generate-scenes, script, art-direction, sound-design, ui-theme]
+    executor:
+      type: agent
+      name: web-app-builder
+    inputs:
+      plan: "${{ tasks.story-plan.outputs.planFile }}"
+      script: "${{ tasks.script.outputs.scriptFile }}"
+      artDirection: "${{ tasks.art-direction.outputs.artDirectionFile }}"
+      soundDesign: "${{ tasks.sound-design.outputs.soundDesignFile }}"
+      themeManifest: "${{ tasks.ui-theme.outputs.themeManifest }}"
+      scenes: "${{ tasks.generate-scenes.outputs.sceneDirectory }}"
+    outputs:
+      appDirectory:
+        directory: artifacts/app
+    retry:
+      maxAttempts: 2
+
+  - id: accessibility-review
+    description: Review the assembled app for accessibility blockers and improvements.
+    dependsOn: [assemble-app]
+    executor:
+      type: agent
+      name: accessibility-reviewer
+    inputs:
+      app: "${{ tasks.assemble-app.outputs.appDirectory }}"
+    outputs:
+      reviewFile:
+        path: artifacts/reviews/accessibility.json
+        schema: .github/skills/animated-story-workflow/schemas/review-result.schema.json
+    retry:
+      maxAttempts: 1
+
+  - id: browser-test
+    description: Exercise the assembled app in a browser and report reproducible findings.
+    dependsOn: [assemble-app]
+    executor:
+      type: agent
+      name: browser-reviewer
+    inputs:
+      app: "${{ tasks.assemble-app.outputs.appDirectory }}"
+    outputs:
+      reviewFile:
+        path: artifacts/reviews/browser.json
+        schema: .github/skills/animated-story-workflow/schemas/review-result.schema.json
+    retry:
+      maxAttempts: 1
+
+  - id: fix-and-optimize
+    description: Resolve blocking review findings and optimize the dependency-free app.
+    dependsOn: [accessibility-review, browser-test]
+    executor:
+      type: agent
+      name: web-app-builder
+    inputs:
+      app: "${{ tasks.assemble-app.outputs.appDirectory }}"
+      accessibilityReview: "${{ tasks.accessibility-review.outputs.reviewFile }}"
+      browserReview: "${{ tasks.browser-test.outputs.reviewFile }}"
+    outputs:
+      optimizedApp:
+        directory: artifacts/app
+    retry:
+      maxAttempts: 2
+
+  - id: publish
+    description: Copy the validated static app and emit the final manifest.
+    dependsOn: [fix-and-optimize]
+    executor:
+      type: agent
+      name: web-app-builder
+    inputs:
+      app: "${{ tasks.fix-and-optimize.outputs.optimizedApp }}"
+      accessibilityReview: "${{ tasks.accessibility-review.outputs.reviewFile }}"
+      browserReview: "${{ tasks.browser-test.outputs.reviewFile }}"
+    outputs:
+      publishedDirectory:
+        directory: artifacts/published
+      finalManifest:
+        path: artifacts/final/final-manifest.json
+        schema: .github/skills/animated-story-workflow/schemas/final-manifest.schema.json
+    retry:
+      maxAttempts: 1

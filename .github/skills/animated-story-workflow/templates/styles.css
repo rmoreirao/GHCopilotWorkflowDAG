@@ -1,0 +1,22 @@
+:root {
+  --page: #f8f5ec;
+  --ink: #18212b;
+  --accent: #315f73;
+  --focus: #a83d00;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font-family: system-ui, sans-serif; }
+button { min-height: 44px; min-width: 44px; font: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.skip-link { position: absolute; transform: translateY(-150%); }
+.skip-link:focus { transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

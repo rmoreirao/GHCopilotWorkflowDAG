@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ui-theme-manifest.schema.json",
+  "title": "UI theme manifest",
+  "type": "object",
+  "required": ["schemaVersion", "name", "cssPath", "tokens", "breakpoints", "accessibility"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "cssPath": { "const": "theme.css" },
+    "tokens": {
+      "type": "object",
+      "required": ["colors", "spacing", "radii", "typeScale"],
+      "additionalProperties": false,
+      "properties": {
+        "colors": { "type": "object", "minProperties": 5, "additionalProperties": { "type": "string" } },
+        "spacing": { "type": "object", "minProperties": 3, "additionalProperties": { "type": "string" } },
+        "radii": { "type": "object", "minProperties": 2, "additionalProperties": { "type": "string" } },
+        "typeScale": { "type": "object", "minProperties": 3, "additionalProperties": { "type": "string" } }
+      }
+    },
+    "breakpoints": { "type": "array", "items": { "type": "integer", "minimum": 240 }, "uniqueItems": true },
+    "accessibility": {
+      "type": "object",
+      "required": ["focusStyle", "minimumContrast", "reducedMotion"],
+      "additionalProperties": false,
+      "properties": {
+        "focusStyle": { "type": "string", "minLength": 1 },
+        "minimumContrast": { "type": "number", "minimum": 4.5 },
+        "reducedMotion": { "const": true }
+      }
+    }
+  }
+}

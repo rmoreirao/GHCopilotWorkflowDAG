@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "final-manifest.schema.json",
+  "title": "Published animated story manifest",
+  "type": "object",
+  "required": ["schemaVersion", "title", "entryPoint", "publishedDirectory", "assets", "reviews", "unresolvedFindings"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "entryPoint": { "const": "published/index.html" },
+    "publishedDirectory": { "const": "published" },
+    "assets": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["path", "mediaType", "sha256"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "pattern": "^published/[A-Za-z0-9._/-]+$" },
+          "mediaType": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "reviews": {
+      "type": "object",
+      "required": ["accessibility", "browser"],
+      "additionalProperties": false,
+      "properties": {
+        "accessibility": { "enum": ["pass", "fail"] },
+        "browser": { "enum": ["pass", "fail"] }
+      }
+    },
+    "unresolvedFindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "rationale"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "severity": { "enum": ["minor", "note"] },
+          "rationale": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

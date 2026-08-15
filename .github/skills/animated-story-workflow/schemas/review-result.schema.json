@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "review-result.schema.json",
+  "title": "Review result",
+  "type": "object",
+  "required": ["schemaVersion", "reviewType", "status", "summary", "checks", "findings"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "reviewType": { "enum": ["accessibility", "browser"] },
+    "status": { "enum": ["pass", "fail"] },
+    "summary": { "type": "string", "minLength": 1 },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "status", "evidence"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["pass", "fail", "not-applicable"] },
+          "evidence": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "title", "evidence", "recommendation"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "severity": { "enum": ["blocker", "major", "minor", "note"] },
+          "title": { "type": "string", "minLength": 1 },
+          "evidence": { "type": "string", "minLength": 1 },
+          "recommendation": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "scene-manifest.schema.json",
+  "title": "Scene module manifest",
+  "type": "object",
+  "required": ["schemaVersion", "sceneId", "order", "title", "files", "durationMs", "controls", "accessibility"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "sceneId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "order": { "type": "integer", "minimum": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "files": {
+      "type": "object",
+      "required": ["html", "css", "js"],
+      "additionalProperties": false,
+      "properties": {
+        "html": { "const": "scene.html" },
+        "css": { "const": "scene.css" },
+        "js": { "const": "scene.js" }
+      }
+    },
+    "durationMs": { "type": "integer", "minimum": 0, "maximum": 120000 },
+    "controls": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "accessibility": {
+      "type": "object",
+      "required": ["label", "caption", "reducedMotion"],
+      "additionalProperties": false,
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "caption": { "type": "string", "minLength": 1 },
+        "reducedMotion": { "const": true }
+      }
+    }
+  }
+}
